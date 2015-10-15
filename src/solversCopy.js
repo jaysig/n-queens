@@ -14,151 +14,15 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = []; //fixme
-  //iterate through row 0
-    //with row 0 as a starting point
-    //check at each index how many rooks can be on the rest of the board
-    //when we find a successful configuration
-      //increment count
-      //push solution to array
-  //check hasAnyConflicts based on thi
-
-  //place a rook somewhere
-  //look through other squares and, if no col or row conflicts, place another rook
-  //count how many rooks we've placed
-
-  //take starting location, place rook there
-  //check through other spaces - where else can we place rooks with no conflicts?
-  //create new board of size n
-  /*
-  [1,0,0]
-  [0,1,0]
-  [0,0,1]
-
-  [1,0,0]
-  [0,0,1]
-  [0,1,0]
-
-  [0,1,0]
-  [1,0,0]
-  [0,0,1]
-
-
-
-  [1,0]
-  [0,0]
-
-  [1,1]
-  [0,0]
-  [1,0]
-  [1,0]
-  [1,0]
-  [0,1]
-
-  [1,1]
-  [0,0]
-
-  [0,0,0]
-
-  recurse([0,0,0]);
-    recurse([1,0,0]);
-    recurse([0,1,0]); [1,0,0]
-    recurse([0,0,1]);[1,0,0]
-
-  var recurse = function (startNode) {
-    if (baseCase) {
-      return;
-    }
-
-    for (var i = 0; i < 3; i++) {
-      startNode[i] = 1;
-      [1,0,0]
-      //recurse(startNode);
-      startNode[i] = 0;
-      [0,0,0]
-    }
-  }
-
-  var recurse = function (startNode) {
-    if (baseCase) {
-      return;
-    }
-
-    for (var i = 0; i < 3; i++) {
-      startNode[i] = 1;
-      //recurse(startNode);
-      startNode[i] = 0;
-    }
-  }
-
-                           11
-                      12        3
-                    14   15         6
-                                    7
-
-  var addTen = function((1 node)) {
-    node.value = node.value + 10;
-    for (var i = 0; i < children.length; i++) {
-      addTen(children[i]);
-    }
-  }
-        var addTen = function((2 node)) {
-            node.value = node.value + 10;
-           for (var i = 0; i < children.length; i++) {
-              addTen(children[i]);
-             }
-            }
-
-                                    var addTen = function((4 node)) {
-                                     node.value = node.value + 10;
-                                    for (var i = 0; i < children.length; i++) {
-                                     addTen(children[i]);
-                                      }
-                                    }
-
-                                    var addTen = function((5 node)) {
-                                     node.value = node.value + 10;
-                                    for (var i = 0; i < children.length; i++) {
-                                     addTen(children[i]);
-                                      }
-                                    }
-
-var arr = [1, 2, 3]
-var solutions = [];
-solutions.push[arr];
-arr[0] = 5;
-[5,2,3]
-console.log(solutions[0]);
-
-
-  [1,1]
-  */
+  var solution = [];
   var board = [];
   for(var z =0;z<n;z++){
     board[z]=0;
   }
-  //100
-  var piecePlacer = function(currentRow, board, colBits) {
-    //Node is a board configuration
+  var piecePlacer = function(currentRow, board, colBits, onFind) {
     if (currentRow === n) {
-      for(var u=0; u< n;u++){
-        solution[u]=[];
-        for(var w = 0;w<n;w++){
-          solution[u][w] = board[u] >> (n-w-1) & 1;
-        }
-      }
-      return;
+      onFind(board);
     }
-//10100100 >> 5
-//00000101 &
-//00000001
-
-// 000000000010101
-// 111111111101010
-// &
-// 000000000011111
-// 000000000001010
-
     var possibilities = ~colBits & ((1 << n)-1);
     var bit;
     while (bit = (possibilities & -possibilities)){
@@ -169,12 +33,20 @@ console.log(solutions[0]);
       possibilities -= bit;
       board[currentRow]=board[currentRow] | bit;
       //colBits = colBits | bit;
-      piecePlacer(currentRow + 1,board, colBits | bit);
+      piecePlacer(currentRow + 1,board, colBits | bit, onFind);
       board[currentRow]=0;
     }
   };
 
-  piecePlacer(0, board, 0);
+  piecePlacer(0, board, 0,function(board){
+    for(var u=0; u< n;u++){
+      solution[u]=[];
+      for(var w = 0;w<n;w++){
+        solution[u][w] = board[u] >> (n-w-1) & 1;
+      }
+    }
+    return;
+  });
 
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));

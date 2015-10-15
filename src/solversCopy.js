@@ -19,24 +19,6 @@ window.findNRooksSolution = function(n) {
   for(var z =0;z<n;z++){
     board[z]=0;
   }
-  var piecePlacer = function(currentRow, board, colBits, onFind) {
-    if (currentRow === n) {
-      onFind(board);
-    }
-    var possibilities = ~colBits & ((1 << n)-1);
-    var bit;
-    while (bit = (possibilities & -possibilities)){
-      //bit represents the place where we are placing our next queen
-      if(solution.length){
-        return;
-      }
-      possibilities -= bit;
-      board[currentRow]=board[currentRow] | bit;
-      //colBits = colBits | bit;
-      piecePlacer(currentRow + 1,board, colBits | bit, onFind);
-      board[currentRow]=0;
-    }
-  };
 
   piecePlacer(0, board, 0,function(board){
     for(var u=0; u< n;u++){
@@ -45,12 +27,31 @@ window.findNRooksSolution = function(n) {
         solution[u][w] = board[u] >> (n-w-1) & 1;
       }
     }
-    return;
+    return solution;
   });
 
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
+};
+
+var piecePlacer = function(currentRow, board, colBits, onFind) {
+  if (currentRow === board.length) {
+    onFind(board);
+  }
+  var possibilities = ~colBits & ((1 << board.length)-1);
+  var bit;
+  var result;
+  while (bit = (possibilities & -possibilities)){
+    //bit represents the place where we are placing our next queen
+    possibilities -= bit;
+    board[currentRow]= bit | 0;
+    result = piecePlacer(currentRow + 1,board, colBits | bit, onFind);
+    if(result){
+      return result;
+    }
+    board[currentRow]=0;
+  }
 };
 
 var copyBoard = function(board) {

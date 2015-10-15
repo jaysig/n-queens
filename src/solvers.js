@@ -142,6 +142,9 @@ console.log(solutions[0]);
       return;
     }
 
+    if (solutions[0]) {
+      return;
+    }
     for (var col = 0; col < n; col++) {
       //if column is occupied
         //do nothing
@@ -153,7 +156,7 @@ console.log(solutions[0]);
         board.togglePiece(currentRow, col);
       }
     }
-  }
+  };
 
   piecePlacer(0, board, []);
 
@@ -175,27 +178,114 @@ var copyBoard = function(board) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutions = [];
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var board = new Board({'n': n});
+
+  var piecePlacer = function(currentRow, board, occupied) {
+    //Node is a board configuration
+    if (currentRow === n) {
+      solutions.push(copyBoard(board));
+      return;
+    }
+
+    for (var col = 0; col < n; col++) {
+      //if column is occupied
+        //do nothing
+      if (!occupied[col]) {
+        occupied[col] = true;
+        board.togglePiece(currentRow, col);
+        piecePlacer(currentRow + 1, board, occupied);
+        occupied[col] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+
+  piecePlacer(0, board, []);
+
+  console.log('Number of solutions for ' + n + ' rooks:', solutions.length);
+  return solutions.length;
 };
 
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solutions = [];
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  var board = new Board({'n': n});
+
+  var piecePlacer = function(currentRow, board, colOccupied, majDiagOccupied, minDiagOccupied) {
+    //Node is a board configuration
+    if (currentRow === n) {
+      solutions.push(copyBoard(board));
+      return;
+    }
+
+    for (var col = 0; col < n; col++) {
+      //if column is occupied
+        //do nothing
+      if (solutions[0]) {
+        return;
+      }
+      if (!colOccupied[col] && !majDiagOccupied[col - currentRow] && !minDiagOccupied[col + currentRow]) {
+        colOccupied[col] = true;
+        majDiagOccupied[col - currentRow] = true;
+        minDiagOccupied[col + currentRow] = true;
+        board.togglePiece(currentRow, col);
+        piecePlacer(currentRow + 1, board, colOccupied, majDiagOccupied, minDiagOccupied);
+        colOccupied[col] = false;
+        majDiagOccupied[col - currentRow] = false;
+        minDiagOccupied[col + currentRow] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+
+  piecePlacer(0, board, [], [], []);
+
+  if (solutions.length === 0) {
+    solutions.push(new Board({'n': n}).rows());
+  }
+
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solutions[0]));
+  return solutions[0];
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+ var solutions = [];
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  var board = new Board({'n': n});
+
+  var piecePlacer = function(currentRow, board, colOccupied, majDiagOccupied, minDiagOccupied) {
+    //Node is a board configuration
+    if (currentRow === n) {
+      solutions.push(copyBoard(board));
+      return;
+    }
+
+    for (var col = 0; col < n; col++) {
+      //if column is occupied
+        //do nothing
+      if (!colOccupied[col] && !majDiagOccupied[col - currentRow] && !minDiagOccupied[col + currentRow]) {
+        colOccupied[col] = true;
+        majDiagOccupied[col - currentRow] = true;
+        minDiagOccupied[col + currentRow] = true;
+        board.togglePiece(currentRow, col);
+        piecePlacer(currentRow + 1, board, colOccupied, majDiagOccupied, minDiagOccupied);
+        colOccupied[col] = false;
+        majDiagOccupied[col - currentRow] = false;
+        minDiagOccupied[col + currentRow] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+
+  piecePlacer(0, board, [], [], []);
+
+  console.log('Number of solutions for ' + n + ' queens:', solutions.length);
+  return solutions.length;
 };

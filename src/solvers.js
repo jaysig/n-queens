@@ -135,7 +135,7 @@ console.log(solutions[0]);
   */
   var board = new Board({'n': n});
 
-  var piecePlacer = function(currentRow, board) {
+  var piecePlacer = function(currentRow, board, occupied) {
     //Node is a board configuration
     if (currentRow === n) {
       solutions.push(copyBoard(board));
@@ -143,15 +143,19 @@ console.log(solutions[0]);
     }
 
     for (var col = 0; col < n; col++) {
-      board.togglePiece(currentRow, col);
-      if (!board.hasColConflictAt(col)) {
-        piecePlacer(currentRow + 1, board);
+      //if column is occupied
+        //do nothing
+      if (!occupied[col]) {
+        occupied[col] = true;
+        board.togglePiece(currentRow, col);
+        piecePlacer(currentRow + 1, board, occupied);
+        occupied[col] = false;
+        board.togglePiece(currentRow, col);
       }
-      board.togglePiece(currentRow, col);
     }
   }
 
-  piecePlacer(0, board);
+  piecePlacer(0, board, []);
 
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solutions[0]));

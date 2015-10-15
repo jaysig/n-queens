@@ -135,28 +135,23 @@ console.log(solutions[0]);
   */
   var board = new Board({'n': n});
 
-  var piecePlacer = function(rowsToGo, board) {
+  var piecePlacer = function(currentRow, board) {
     //Node is a board configuration
-    if (rowsToGo === 0) {
+    if (currentRow === n) {
       solutions.push(copyBoard(board));
       return;
     }
 
-    for (var row = 0; row < n; row++) {
-      for (var col = 0; col < n; col++) {
-        if (board.get(row)[col]) {
-          continue;
-        }
-        board.togglePiece(row, col);
-        if (!board.hasAnyRooksConflicts()) {
-          piecePlacer(rowsToGo - 1, board);
-        }
-        board.togglePiece(row, col);
+    for (var col = 0; col < n; col++) {
+      board.togglePiece(currentRow, col);
+      if (!board.hasColConflictAt(col)) {
+        piecePlacer(currentRow + 1, board);
       }
+      board.togglePiece(currentRow, col);
     }
   }
 
-  piecePlacer(n, board);
+  piecePlacer(0, board);
 
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solutions[0]));

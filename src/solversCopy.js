@@ -15,12 +15,9 @@
 
 window.findNRooksSolution = function(n) {
   var solution = [];
-  var board = [];
-  for(var z =0;z<n;z++){
-    board[z]=0;
-  }
+  emptyBoard(n);
 
-  piecePlacer(0, board, 0,function(board){
+  piecePlacer(0, emptyBoard(n), 0,function(board){
     for(var u=0; u< n;u++){
       solution[u]=[];
       for(var w = 0;w<n;w++){
@@ -37,7 +34,7 @@ window.findNRooksSolution = function(n) {
 
 var piecePlacer = function(currentRow, board, colBits, onFind) {
   if (currentRow === board.length) {
-    onFind(board);
+    return onFind(board);
   }
   var possibilities = ~colBits & ((1 << board.length)-1);
   var bit;
@@ -62,39 +59,27 @@ var copyBoard = function(board) {
   }
   return result;
 };
-
+var emptyBoard = function(n){
+  var board = [];
+  for(var z =0;z<n;z++){
+    board[z]=0;
+  }
+  return board;
+}
 
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutions = [];
+  var solutionsCount = 0;
+  //var board = emptyBoard(n);
 
-  var board = new Board({'n': n});
 
-  var piecePlacer = function(currentRow, board, occupied) {
-    //Node is a board configuration
-    if (currentRow === n) {
-      solutions.push(copyBoard(board));
-      return;
-    }
+  piecePlacer(0, emptyBoard(n), 0,function(){
+    solutionsCount++;
+  });
 
-    for (var col = 0; col < n; col++) {
-      //if column is occupied
-        //do nothing
-      if (!occupied[col]) {
-        occupied[col] = true;
-        board.togglePiece(currentRow, col);
-        piecePlacer(currentRow + 1, board, occupied);
-        occupied[col] = false;
-        board.togglePiece(currentRow, col);
-      }
-    }
-  };
-
-  piecePlacer(0, board, []);
-
-  console.log('Number of solutions for ' + n + ' rooks:', solutions.length);
-  return solutions.length;
+  console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
+  return solutionsCount;
 };
 
 

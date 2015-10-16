@@ -12,110 +12,37 @@
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
-
 window.findNRooksSolution = function(n) {
-  var solution = [];
-  emptyBoard(n);
+  var solution;
 
-  piecePlacer(0, emptyBoard(n), 0,function(board){
-    for(var u=0; u< n;u++){
-      solution[u]=[];
-      for(var w = 0;w<n;w++){
-        solution[u][w] = board[u] >> (n-w-1) & 1;
-      }
-    }
-    return solution;
+  placePiece(0, emptyBoard(n), 0,function(board){
+    return solution = copyBoardBitsToArray(board);
   });
-
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
 
-var piecePlacer = function(currentRow, board, colBits, onFind) {
-  if (currentRow === board.length) {
-    return onFind(board);
-  }
-  var possibilities = ~colBits & ((1 << board.length)-1);
-  var bit;
-  var result;
-  while (bit = (possibilities & -possibilities)){
-    //bit represents the place where we are placing our next queen
-    possibilities -= bit;
-    board[currentRow]= bit | 0;
-    result = piecePlacer(currentRow + 1,board, colBits | bit, onFind);
-    if(result){
-      return result;
-    }
-    board[currentRow]=0;
-  }
-};
-
-var copyBoard = function(board) {
-  var arr = board.rows();
-  var result = [];
-  for (var i = 0; i < arr.length; i++) {
-    result.push(arr[i].slice());
-  }
-  return result;
-};
-var emptyBoard = function(n){
-  var board = [];
-  for(var z =0;z<n;z++){
-    board[z]=0;
-  }
-  return board;
-};
-
-
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionsCount = 0;
-  //var board = emptyBoard(n);
-
-
-  piecePlacer(0, emptyBoard(n), 0,function(){
-    solutionsCount++;
+  var solutionCount = 0;
+  placePiece(0, emptyBoard(n), 0,function(){
+    solutionCount++;
   });
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
-  return solutionsCount;
-};
-
-var piecePlacerQ = function(currentRow, board, colBits, majDiagBits, minDiagBits, onFind) {
-  if (currentRow === board.length) {
-    return onFind(board);
-  }
-  var possibilities = ~(colBits | majDiagBits | minDiagBits) & ((1 << board.length)-1);
-  var bit;
-  var result;
-  while (bit = (possibilities & -possibilities)){
-    //bit represents the place where we are placing our next queen
-    possibilities -= bit;
-    board[currentRow]= bit | 0;
-    result = piecePlacerQ(currentRow + 1,board, colBits | bit, (majDiagBits | bit) << 1, (minDiagBits | bit) >> 1, onFind);
-    if(result){
-      return result;
-    }
-    board[currentRow]=0;
-  }
+  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = [];
+  var solution;
 
   piecePlacerQ(0, emptyBoard(n), 0, 0, 0, function(board){
-    for(var u=0; u< n;u++){
-      solution[u]=[];
-      for(var w = 0;w<n;w++){
-        solution[u][w] = board[u] >> (n-w-1) & 1;
-      }
-    }
-    return solution;
+   return solution = copyBoardBitsToArray(board);
   });
 
-  if (!solution.length) {
+  if (!solution) {
     solution = new Board({'n': n}).rows();
   }
 
@@ -134,4 +61,59 @@ window.countNQueensSolutions = function(n) {
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
+};
+
+var placePiece = function(currentRow, board, colBits, onFind) {
+  if (currentRow === board.length) {
+    return onFind(board);
+  }
+
+  var bit, result, possibilities = ~colBits & ((1 << board.length)-1);
+  while (bit = (possibilities & -possibilities)){
+    //bit represents the place where we are placing our next queen
+    possibilities -= bit;
+    board[currentRow] = bit | 0;
+    result = placePiece(currentRow + 1,board, colBits | bit, onFind);
+    if(result) {
+      return result;
+    }
+    board[currentRow] = 0;
+  }
+};
+
+var piecePlacerQ = function(currentRow, board, colBits, majDiagBits, minDiagBits, onFind) {
+  if (currentRow === board.length) {
+    return onFind(board);
+  }
+
+  var bit, result, possibilities = ~(colBits | majDiagBits | minDiagBits) & ((1 << board.length)-1);
+  while (bit = (possibilities & -possibilities)){
+    //bit represents the place where we are placing our next queen
+    possibilities -= bit;
+    board[currentRow] = bit | 0;
+    result = piecePlacerQ(currentRow + 1,board, colBits | bit, (majDiagBits | bit) << 1, (minDiagBits | bit) >> 1, onFind);
+    if(result) {
+      return result;
+    }
+    board[currentRow] = 0;
+  }
+};
+
+var copyBoardBitsToArray = function(board) {
+  var arr = [];
+  for(var u = 0; u < board.length; u++) {
+    arr[u] = [];
+    for(var w = 0; w<board.length; w++) {
+      arr[u][w] = board[u] >> (board.length - w - 1) & 1;
+    }
+  }
+  return arr;
+};
+
+var emptyBoard = function(n){
+  var board = [];
+  for(var z =0;z<n;z++){
+    board[z]=0;
+  }
+  return board;
 };

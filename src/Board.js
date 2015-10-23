@@ -79,14 +79,33 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
-    },
+    //If more than one. Return true
+    //Toogle piece
+    var row = this.get(rowIndex);
+    var pieces = [];
+    for (var i = 0; i < row.length; i++) {
+      if (row[i] === 1) {
+        pieces.push(row[i]);
+      }
+    }
+    if (pieces.length > 1) {
+      return true;
+    }
+      return false;
+  },
 
-    // test if any rows on this board contain conflicts
-    hasAnyRowConflicts: function() {
-      return false; // fixme
-    },
-
+  // test if any rows on this board contain conflicts
+  hasAnyRowConflicts: function() {
+    //Test all row conflict
+    //if Any fail the row conflict test
+    //return true
+    for (var x = 0; x < this.get('n'); x++) {
+      if (this.hasRowConflictAt(x)) { //Need this for it not be undefined
+        return true;
+      }
+    }
+    return false; // fixme
+  },
 
 
     // COLUMNS - run from top to bottom
@@ -94,11 +113,25 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var count = 0; //To count the conflicts
+      for(var x = 0; x<this.get('n');x++){ //Loop through each row
+        if(n[colIndex] === 1){ //if the element in the column has a piece
+          count++; //Increase the count
+        }
+      }
+      if(count > 1){
+        return true;
+      }
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      for(var i=0; i <this.get('n');i++){
+        if (this.hasColConflictAt()){
+          return true;
+        }
+      }
       return false; // fixme
     },
 

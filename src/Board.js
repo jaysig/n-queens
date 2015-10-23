@@ -145,25 +145,22 @@
       //Check starting position
       //Shift down and right one
       var count = 0;
-      for(var i = 0; i<this.get('n');i++){
-        if(this.get(i)[majorDiagonalColumnIndexAtFirstRow] === 1){
+      var col = majorDiagonalColumnIndexAtFirstRow;
+      for(var i = 0; i < this.get('n') && col < this.get('n'); i++, col++){
+        if(this.get(i)[col]){
           count++;
+          if(count > 1){
+            return true;
+          }
         }
-        majorDiagonalColumnIndexAtFirstRow++;
-        if(majorDiagonalColumnIndexAtFirstRow > this.get('n')){
-          break;
-        }
-      }
-      if(count > 1){
-        return true;
       }
       return false; // fixme
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      for(var i =0; i<this.get('n');i++){
-        if(this.hasAnyMajorDiagonalConflicts(i)){
+      for (var i =0; i < this.get('n');i++){
+        if(this.hasMajorDiagonalConflictAt(i)){
           return true;
         }
       }
@@ -182,6 +179,11 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      for (var i =0; i < this.get('n');i++){
+        if(this.hasMinorDiagonalConflictAt(i)){
+          return true;
+        }
+      }
       return false; // fixme
     }
 

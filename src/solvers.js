@@ -14,11 +14,37 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution;
-  var board = boardGenerator(n);
-  solution = piecePlacer(board,n,0,0);
+  var solution = [];
+  var board = new Board({
+    'n': n
+  });
+  var piecePlacer = function(board, currentRow, occupied) {
+    //For the length of the board
+    //Check if a piece can go there
+    // solution = []; //Need an empty array to hold the solution
+    if (currentRow === n) {
+      solution.push(copyBoard(board)); //board)
+      return;
+    }
+    if (solution[0]) { //Not sure why I am doing this
+      return;
+    }
+    for (var col = 0; col < n; col++) {
+      //Check if occupied. Not sure how
+      if (!occupied[col]) {
+        //If so Toogle the Piece
+        occupied[col] = true;
+        board.togglePiece(currentRow, col);
+        //piecePlacer on row +1 Col +1
+        piecePlacer(board, currentRow + 1, occupied);
+        occupied[col] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+  piecePlacer(board, 0, []);
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  return solution[0];
 };
 
 
@@ -26,27 +52,13 @@ window.findNRooksSolution = function(n) {
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0; //fixme
-  for(var x = 0; x < n; x++){
-    piecePlacer(board,n,x,0);
+  for (var x = 0; x < n; x++) {
+    piecePlacer(board, n, x, 0);
   }
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-var piecePlacer = function(board,n,row,col){
-  //For the length of the board
-  //Check if a piece can go there
-  for(var i =row; i<n;i++){
-    if(!hasRowConflictAt(i)&&!hasColConflictAt(col)){
-      //If so Toogle the Piece
-      this.togglePiece(row,col);
-      //piecePlacer on row +1 Col +1
-      piecePlacer(board,n,row+1,col+1);
-      this.togglePiece(row,col);
-    }
-  }
-  return board;
-};
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
@@ -65,6 +77,11 @@ window.countNQueensSolutions = function(n) {
   return solutionCount;
 };
 
-var boardGenerator = function(n){
-  return new Board({n:n});
+var copyBoard = function(board) {
+  var arr = board.rows(); //gives us arrays of all the rows
+  var result = [];
+  for (var i = 0; i < arr.length; i++) {
+    result.push(arr[i].slice());
+  }
+  return result;
 };

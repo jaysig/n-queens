@@ -26,7 +26,7 @@ window.findNRooksSolution = function(n) {
       solution.push(copyBoard(board)); //board)
       return;
     }
-    if (solution[0]) { //Not sure why I am doing this
+    if (solution[0]) { //If there's one solution. Stop cycling.
       return;
     }
     for (var col = 0; col < n; col++) {
@@ -61,9 +61,6 @@ window.countNRooksSolutions = function(n) {
     // solution = []; //Need an empty array to hold the solution
     if (currentRow === n) {
       solutions.push(copyBoard(board)); //board)
-      return;
-    }
-    if (solutions[0]) { //Not sure why I am doing this
       return;
     }
     for (var col = 0; col < n; col++) {

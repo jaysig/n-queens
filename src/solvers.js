@@ -51,12 +51,37 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = 0; //fixme
-  for (var x = 0; x < n; x++) {
-    piecePlacer(board, n, x, 0);
-  }
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var solutions = [];
+  var board = new Board({
+    'n': n
+  });
+  var piecePlacer = function(board, currentRow, occupied) {
+    //For the length of the board
+    //Check if a piece can go there
+    // solution = []; //Need an empty array to hold the solution
+    if (currentRow === n) {
+      solutions.push(copyBoard(board)); //board)
+      return;
+    }
+    if (solutions[0]) { //Not sure why I am doing this
+      return;
+    }
+    for (var col = 0; col < n; col++) {
+      //Check if occupied. Not sure how
+      if (!occupied[col]) {
+        //If so Toogle the Piece
+        occupied[col] = true;
+        board.togglePiece(currentRow, col);
+        //piecePlacer on row +1 Col +1
+        piecePlacer(board, currentRow + 1, occupied);
+        occupied[col] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+  piecePlacer(board, 0, []);
+  console.log('Number of solutions for ' + n + ' rooks:', solutions.length);
+  return solutions.length;
 };
 
 

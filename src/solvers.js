@@ -88,10 +88,10 @@ window.findNQueensSolution = function(n) {
   var board = new Board({
     'n': n
   });
-  var piecePlacerQ = function(board, currentRow, colOccupied,minDiagOccupied,majDiagOccupied) {
+  var piecePlacerQ = function(board, currentRow, colOccupied,majDiagOccupied,minDiagOccupied) {
     // Concerned with diags
     //Need to shift one over and one down check diags
-    if (currentRow === n || null) {
+    if (currentRow === n ) {
       solution.push(copyBoard(board)); //board)
       return;
     }
@@ -100,24 +100,28 @@ window.findNQueensSolution = function(n) {
     }
     for (var col = 0; col < n; col++) {
       //Check if occupied. Not sure how
-      if (!colOccupied[col] && !minDiagOccupied[col - currentRow] && !majDiagOccupied[col + currentRow]) {
+      if (!colOccupied[col] && !majDiagOccupied[col - currentRow] && !minDiagOccupied[col + currentRow]) {
         //If so Toogle the Piece
         colOccupied[col] = true;
-        minDiagOccupied[col - currentRow] = true;
-        majDiagOccupied[col + currentRow] = true;
+        majDiagOccupied[col - currentRow] = true;
+        minDiagOccupied[col + currentRow] = true;
         board.togglePiece(currentRow, col);
         //piecePlacer on row +1 Col +1
-        piecePlacerQ(board, currentRow + 1, colOccupied,minDiagOccupied,majDiagOccupied);
+        piecePlacerQ(board, currentRow + 1, colOccupied,majDiagOccupied,minDiagOccupied);
         colOccupied[col] = false;
-        minDiagOccupied[col - currentRow] = false;
-        majDiagOccupied[col + currentRow] = false;
+        majDiagOccupied[col - currentRow] = false;
+        minDiagOccupied[col + currentRow] = false;
         board.togglePiece(currentRow, col);
       }
     }
   };
   piecePlacerQ(board, 0, [],[],[]);
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  if (solution.length === 0) { //Need to account for empty board
+    solution.push(new Board({'n': n}).rows());
+  }
+
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution[0]));
   return solution[0];
 };
 

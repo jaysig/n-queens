@@ -84,19 +84,78 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution = [];
+  var board = new Board({
+    'n': n
+  });
+  var piecePlacerQ = function(board, currentRow, colOccupied,minDiagOccupied,majDiagOccupied) {
+    // Concerned with diags
+    //Need to shift one over and one down check diags
+    if (currentRow === n || null) {
+      solution.push(copyBoard(board)); //board)
+      return;
+    }
+    if (solution[0]) { //If there's one solution. Stop cycling.
+      return;
+    }
+    for (var col = 0; col < n; col++) {
+      //Check if occupied. Not sure how
+      if (!colOccupied[col] && !minDiagOccupied[col - currentRow] && !majDiagOccupied[col + currentRow]) {
+        //If so Toogle the Piece
+        colOccupied[col] = true;
+        minDiagOccupied[col - currentRow] = true;
+        majDiagOccupied[col + currentRow] = true;
+        board.togglePiece(currentRow, col);
+        //piecePlacer on row +1 Col +1
+        piecePlacerQ(board, currentRow + 1, colOccupied,minDiagOccupied,majDiagOccupied);
+        colOccupied[col] = false;
+        minDiagOccupied[col - currentRow] = false;
+        majDiagOccupied[col + currentRow] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+  piecePlacerQ(board, 0, [],[],[]);
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  return solution[0];
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutions = [];
+  var board = new Board({
+    'n': n
+  });
+  var piecePlacerQ = function(board, currentRow, colOccupied,minDiagOccupied,majDiagOccupied) {
+    // Concerned with diags
+    //Need to shift one over and one down check diags
+    if (currentRow === n) {
+      solutions.push(copyBoard(board)); //board)
+      return;
+    }
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+    for (var col = 0; col < n; col++) {
+      //Check if occupied. Not sure how
+      if (!colOccupied[col] && !minDiagOccupied[col - currentRow] && !majDiagOccupied[col + currentRow]) {
+        //If so Toogle the Piece
+        colOccupied[col] = true;
+        minDiagOccupied[col - currentRow] = true;
+        majDiagOccupied[col + currentRow] = true;
+        board.togglePiece(currentRow, col);
+        //piecePlacer on row +1 Col +1
+        piecePlacerQ(board, currentRow + 1, colOccupied,minDiagOccupied,majDiagOccupied);
+        colOccupied[col] = false;
+        minDiagOccupied[col - currentRow] = false;
+        majDiagOccupied[col + currentRow] = false;
+        board.togglePiece(currentRow, col);
+      }
+    }
+  };
+  piecePlacerQ(board, 0, [],[],[]);
+  console.log('Number of solutions for ' + n + ' queens:', solutions.length);
+  return solutions.length;
 };
 
 var copyBoard = function(board) {
